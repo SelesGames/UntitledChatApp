@@ -1,0 +1,9 @@
+obj
+bin
+*.user
+*.suo
+csx
+*.dbmdl
+rcf
+
+/packages
