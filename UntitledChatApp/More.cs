@@ -35,6 +35,12 @@ namespace Core
 
     public class RoomNode : Node
     {
+        public static RoomNode DefaultRoom = new RoomNode();
+    }
+
+    public class Root : Node
+    {
+
     }
 
     public class Node
@@ -67,7 +73,6 @@ namespace Core
                 node = node.Children.FindNearestTo(user);
             }
             node.AddChild(user);
-            node.EvaluateChildCount();
         }
 
         #endregion
@@ -86,18 +91,6 @@ namespace Core
         }
 
         /// <summary>
-        /// Evaluate the number of child nodes, reacting if over MAX or under MIN
-        /// </summary>
-        void EvaluateChildCount()
-        {
-            if (Children.Count >= MAX)
-                SplitThisNode();
-
-            else if (Children.Count <= MIN)
-                Dissolve();
-        }
-
-        /// <summary>
         /// Distribute Children to this node's siblings, according to distance
         /// </summary>
         static void DistributeNodesToNearestNodes(IEnumerable<Node> nodesToDistribute, IEnumerable<Node> targets)
@@ -105,12 +98,14 @@ namespace Core
             if (nodesToDistribute == null) throw new ArgumentNullException("nodesToDistribute");
             if (targets == null) throw new ArgumentNullException("targets");
 
+            var targetsArray = targets.ToArray();
+
             var nodeAndNearestTargetTuples = nodesToDistribute
                 .AsParallel()                           // operation parallelizes well
                 .Select(node => new
                 {
                     node,
-                    nearestTarget = targets.FindNearestTo(node)
+                    nearestTarget = targetsArray.FindNearestTo(node)
                 });
 
             foreach (var tuple in nodeAndNearestTargetTuples)
@@ -155,7 +150,7 @@ namespace Core
             //    or to temp node, based on distance
             DistributeNodesToNearestNodes(
                 nodesToDistribute: furthestNodes, 
-                targets: GetSiblings().Union(new[] { tempNode }).ToList());
+                targets: GetSiblings().Union(new[] { tempNode }));
 
             // 4: reset tempNode's midpoint
             tempNode.MidPoint = tempNode.Children.GetGeographicMidpoint();
@@ -166,10 +161,17 @@ namespace Core
             {
                 DistributeNodesToNearestNodes(
                     nodesToDistribute: tempNode.Children,
-                    targets: GetSiblings().ToList());
+                    targets: GetSiblings());
             }
             else
             {
+                // check to see if the parent is the root node
+                if (Parent == null)
+                {
+                    // create a new root node.  The root will never be a RoomNode
+                    var newRoot = new Node();
+                    Parent = newRoot;
+                }
                 Parent.AddChild(tempNode);
             }
         }
@@ -190,7 +192,7 @@ namespace Core
 
             // remove the furthest child nodes
             foreach (var node in furthestNodes)
-                InnerRemoveChild(node);
+                RemoveChild(node);
 
             return furthestNodes;
         }
@@ -203,42 +205,31 @@ namespace Core
         #region Remove a Node
 
         /// <summary>
-        /// Remove a Node from the Children collection.  Distribute the Nodes's child nodes
-        /// amongst the remaining sibling Nodes, according to distance
-        /// </summary>
-        /// <param name="room">The ChatRoom to remove</param>
-        public void RemoveChild(Node node)
-        {
-            InnerRemoveChild(node);
-
-            // distribute all node's child nodes to the sibling nodes
-            DistributeNodesToNearestNodes(
-                nodesToDistribute: node.Children, 
-                targets: Children);
-
-            // if we've hit the min threshold, remove this node from it's parent,
-            // which will in turn distribute this node's children to it's siblings
-            if (Children.Count <= MIN)
-                Parent.Remove(this);// Dissolve();
-        }
-
-        /// <summary>
         /// Remove a node from Children and re-calculate the midpoint
         /// </summary>
-        void InnerRemoveChild(Node node)
+        void RemoveChild(Node node)
         {
             Children.Remove(node);
             MidPoint = MidPoint.Subtract(node.MidPoint.midpoint);
+
+            if (Children.Count <= MIN)
+                DestroyThisNode();
         }
 
         /// <summary>
-        /// Remove this room from the parent node - which will in turn distribute every 
-        /// child node to one of the sibling nodes, based on distance
+        /// Destroy this node - first remove it from its parent's children, then 
+        /// distribute all of this node's children amongst its siblings.
         /// </summary>
-        void Dissolve()
+        void DestroyThisNode()
         {
-            // if you remove this room and there are no other rooms, this would be a bug
+            // never destroy the root node of the default room node
+            if (Parent == null || this == RoomNode.DefaultRoom)
+                return;
+
             Parent.RemoveChild(this);
+            DistributeNodesToNearestNodes(
+                nodesToDistribute: Children,
+                targets: GetSiblings());
         }
 
         #endregion

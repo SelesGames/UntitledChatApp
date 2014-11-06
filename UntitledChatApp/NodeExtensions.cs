@@ -27,17 +27,17 @@ namespace Core
             else throw new ArgumentException(string.Format("unsupported OrderType: {0}", orderType), "orderType");
         }
 
-        public static Node FindNearestTo(this IEnumerable<Node> nodes, Node node)
-        {
-            return FindNearestTo(nodes, node.MidPoint.midpoint);
-        }
-
         public static Node FindNearestTo(this IEnumerable<Node> nodes, CartesianCoordinates coords)
         {
             if (nodes == null || !nodes.Any())
                 throw new ArgumentException("can't find nearest if rooms is empty or null", "rooms");
 
             return OrderyByDistanceTo(nodes, coords, NodeDistanceOrderType.Nearest).First();
+        }
+
+        public static Node FindNearestTo(this IEnumerable<Node> nodes, Node node)
+        {
+            return FindNearestTo(nodes, node.MidPoint.midpoint);
         }
 
         public static WeightedCartesianCoordinatesAggregate GetGeographicMidpoint(this IEnumerable<Node> nodes)

@@ -114,6 +114,7 @@
     <Compile Include="ChatUser.cs" />
     <Compile Include="GPS.cs" />
     <Compile Include="More.cs" />
+    <Compile Include="NodeExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="UserId.cs" />
