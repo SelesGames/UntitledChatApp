@@ -1,23 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace Core
+namespace UntitledChatApp.Core
 {
-    struct DecimalCoordinates
+    public struct DecimalCoordinates
     {
         public double decimalLatitude;
         public double decimalLongitude;
+
+        public override string ToString()
+        {
+            return string.Format("lat: {0}, long: {1}", decimalLatitude, decimalLongitude);
+        }
     }
 
-    struct RadiansCoordinates
+    public struct RadiansCoordinates
     {
         public double radiansLatitude;
         public double radiansLongitude;
+
+        public override string ToString()
+        {
+            return string.Format("rlat: {0}, rlong: {1}", radiansLatitude, radiansLongitude);
+        }
     }
 
-    struct CartesianCoordinates
+    public struct CartesianCoordinates
     {
         public double x;
         public double y;
@@ -26,27 +33,47 @@ namespace Core
         public static implicit operator WeightedCartesianCoordinates(CartesianCoordinates o)
         {
             WeightedCartesianCoordinates result;
-            result.coordinates = o;
+            result.midpoint = o;
             result.weight = 1d;
             return result;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}, {2}", x, y, z);
+        }
     }
 
-    struct WeightedCartesianCoordinates
+    public struct WeightedCartesianCoordinates
     {
-        public CartesianCoordinates coordinates;
-        public double weight;
-    }
+        public static WeightedCartesianCoordinates Empty;// = new WeightedCartesianCoordinates
+        //{ 
+        //    midpoint = new CartesianCoordinates(), 
+        //    weight = 1d
+        //};
 
-    struct WeightedCartesianCoordinatesAggregate
-    {
-        public static WeightedCartesianCoordinatesAggregate Empty = new WeightedCartesianCoordinatesAggregate { midpoint = new CartesianCoordinates(), totalWeight = 1 };
-        
         public CartesianCoordinates midpoint;
-        public double totalWeight;
+        public double weight;
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}, {2}    weight: {3}", 
+                midpoint.x, 
+                midpoint.y, 
+                midpoint.z, 
+                weight);
+        }
     }
 
-    static class GPSMath
+    //public struct WeightedCartesianCoordinatesAggregate
+    //{
+    //    public static WeightedCartesianCoordinatesAggregate Empty = new WeightedCartesianCoordinatesAggregate { midpoint = new CartesianCoordinates(), totalWeight = 1 };
+        
+    //    public CartesianCoordinates midpoint;
+    //    public double totalWeight;
+    //}
+
+    public static class GPSMath
     {
         static readonly double RADIANS = Math.PI / 180d;
         static readonly double DECIMAL = 180d / Math.PI;
@@ -68,68 +95,68 @@ namespace Core
             return result;
         }
 
-        public static WeightedCartesianCoordinatesAggregate Add(this WeightedCartesianCoordinatesAggregate o, WeightedCartesianCoordinates tuple)
+        public static WeightedCartesianCoordinates Add(this WeightedCartesianCoordinates o, WeightedCartesianCoordinates tuple)
         {
-            var totalWeight = o.totalWeight;
+            var totalWeight = o.weight;
             var xAgg = o.midpoint.x * totalWeight;
             var yAgg = o.midpoint.y * totalWeight;
             var zAgg = o.midpoint.z * totalWeight;
 
-            xAgg += tuple.coordinates.x * tuple.weight;
-            yAgg += tuple.coordinates.y * tuple.weight;
-            zAgg += tuple.coordinates.z * tuple.weight;
+            xAgg += tuple.midpoint.x * tuple.weight;
+            yAgg += tuple.midpoint.y * tuple.weight;
+            zAgg += tuple.midpoint.z * tuple.weight;
             totalWeight += tuple.weight;
 
-            WeightedCartesianCoordinatesAggregate result;
+            WeightedCartesianCoordinates result;
             result.midpoint.x = xAgg / totalWeight;
             result.midpoint.y = yAgg / totalWeight;
             result.midpoint.z = zAgg / totalWeight;
-            result.totalWeight = totalWeight;
+            result.weight = totalWeight;
             return result;
         }
 
-        public static WeightedCartesianCoordinatesAggregate Subtract(this WeightedCartesianCoordinatesAggregate o, WeightedCartesianCoordinates tuple)
+        public static WeightedCartesianCoordinates Subtract(this WeightedCartesianCoordinates o, WeightedCartesianCoordinates tuple)
         {
-            var totalWeight = o.totalWeight;
+            var totalWeight = o.weight;
             var xAgg = o.midpoint.x * totalWeight;
             var yAgg = o.midpoint.y * totalWeight;
             var zAgg = o.midpoint.z * totalWeight;
 
-            xAgg -= tuple.coordinates.x * tuple.weight;
-            yAgg -= tuple.coordinates.y * tuple.weight;
-            zAgg -= tuple.coordinates.z * tuple.weight;
+            xAgg -= tuple.midpoint.x * tuple.weight;
+            yAgg -= tuple.midpoint.y * tuple.weight;
+            zAgg -= tuple.midpoint.z * tuple.weight;
             totalWeight -= tuple.weight;
 
-            WeightedCartesianCoordinatesAggregate result;
+            WeightedCartesianCoordinates result;
             result.midpoint.x = xAgg / totalWeight;
             result.midpoint.y = yAgg / totalWeight;
             result.midpoint.z = zAgg / totalWeight;
-            result.totalWeight = totalWeight;
+            result.weight = totalWeight;
             return result;
         }
 
-        public static WeightedCartesianCoordinatesAggregate GetWeightedGeographicMidpoint(this WeightedCartesianCoordinates[] coords)
+        public static WeightedCartesianCoordinates GetWeightedGeographicMidpoint(this WeightedCartesianCoordinates[] coords)
         {
             double totalWeight = 0, xAgg = 0, yAgg = 0, zAgg = 0;
 
             foreach (var tuple in coords)
             {
-                xAgg += tuple.coordinates.x * tuple.weight;
-                yAgg += tuple.coordinates.y * tuple.weight;
-                zAgg += tuple.coordinates.z * tuple.weight;
+                xAgg += tuple.midpoint.x * tuple.weight;
+                yAgg += tuple.midpoint.y * tuple.weight;
+                zAgg += tuple.midpoint.z * tuple.weight;
 
                 totalWeight += tuple.weight;
             }
 
-            WeightedCartesianCoordinatesAggregate result;
+            WeightedCartesianCoordinates result;
             result.midpoint.x = xAgg / totalWeight;
             result.midpoint.y = yAgg / totalWeight;
             result.midpoint.z = zAgg / totalWeight;
-            result.totalWeight = totalWeight;
+            result.weight = totalWeight;
             return result;
         }
 
-        public static WeightedCartesianCoordinatesAggregate GetGeographicMidpoint(this CartesianCoordinates[] coords)
+        public static WeightedCartesianCoordinates GetGeographicMidpoint(this CartesianCoordinates[] coords)
         {
             double totalWeight = 0, xAgg = 0, yAgg = 0, zAgg = 0;
 
@@ -142,11 +169,11 @@ namespace Core
                 totalWeight++;
             }
 
-            WeightedCartesianCoordinatesAggregate result;
+            WeightedCartesianCoordinates result;
             result.midpoint.x = xAgg / totalWeight;
             result.midpoint.y = yAgg / totalWeight;
             result.midpoint.z = zAgg / totalWeight;
-            result.totalWeight = totalWeight;
+            result.weight = totalWeight;
             return result;
         }
 
@@ -190,11 +217,13 @@ namespace Core
             var yd2 = yd * yd;
             var zd2 = zd * zd;
 
-            var xten = xd2 * 0.1d;
-            var yten = yd2 * 0.1d;
-            var zten = zd2 * 0.1d;
+            //var xten = xd2 * 0.1d;
+            //var yten = yd2 * 0.1d;
+            //var zten = zd2 * 0.1d;
 
-            return xten + yten + zten;
+            //return xten + yten + zten;
+
+            return (xd2 + yd2 + zd2) * 0.1d;
         }
     }
 }

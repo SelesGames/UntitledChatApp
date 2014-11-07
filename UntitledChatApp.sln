@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 		PublishScripts\Configurations\UntitledChatApp-WAWS-dev.json = PublishScripts\Configurations\UntitledChatApp-WAWS-dev.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UntitledChatApp.Core", "UntitledChatApp.Core\UntitledChatApp.Core.csproj", "{1A9D1D92-86C8-4935-AC03-05D7A759A825}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UntitledChatApp.Sandbox.Console", "UntitledChatApp.Sandbox.Console\UntitledChatApp.Sandbox.Console.csproj", "{AAF83EEA-3813-4A8A-A749-F64CC6B0B5A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{5BB1DAB6-287A-46B3-9764-6A4C43B8C41A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BB1DAB6-287A-46B3-9764-6A4C43B8C41A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BB1DAB6-287A-46B3-9764-6A4C43B8C41A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A9D1D92-86C8-4935-AC03-05D7A759A825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A9D1D92-86C8-4935-AC03-05D7A759A825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A9D1D92-86C8-4935-AC03-05D7A759A825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A9D1D92-86C8-4935-AC03-05D7A759A825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAF83EEA-3813-4A8A-A749-F64CC6B0B5A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAF83EEA-3813-4A8A-A749-F64CC6B0B5A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAF83EEA-3813-4A8A-A749-F64CC6B0B5A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAF83EEA-3813-4A8A-A749-F64CC6B0B5A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

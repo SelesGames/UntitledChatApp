@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Core
+namespace UntitledChatApp.Core.Graph
 {
     public static class NodeExtensions
     {
@@ -40,7 +40,7 @@ namespace Core
             return FindNearestTo(nodes, node.MidPoint.midpoint);
         }
 
-        public static WeightedCartesianCoordinatesAggregate GetGeographicMidpoint(this IEnumerable<Node> nodes)
+        public static WeightedCartesianCoordinates GetGeographicMidpoint(this IEnumerable<Node> nodes)
         {
             return nodes.Select(o => o.MidPoint.midpoint).ToArray().GetGeographicMidpoint();
         }

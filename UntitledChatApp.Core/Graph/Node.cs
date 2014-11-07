@@ -1,81 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
-namespace Core
+namespace UntitledChatApp.Core.Graph
 {
-    public class NodeCollection
-    {
-        readonly List<Node> nodes;
-
-        public WeightedCartesianCoordinatesAggregate MidPoint { get; private set; }
-
-        public NodeCollection()
-        {
-            this.nodes = new List<Node>();
-        }
-
-        public void Add(Node node)
-        {
-            nodes.Add(node);
-            MidPoint = MidPoint.Add(node.MidPoint.midpoint);
-        }
-
-        public void Remove(Node node)
-        {
-            nodes.Remove(node);
-            MidPoint = MidPoint.Subtract(node.MidPoint.midpoint);
-        }
-    }
-
-    public class UserNode : Node
-    {
-    }
-
-    public class RoomNode : Node
-    {
-        public static RoomNode DefaultRoom = new RoomNode();
-    }
-
-    public class Root : Node
-    {
-
-    }
-
     public class Node
     {
-        readonly protected int MAX = 60;
-        readonly protected int TARGET = 30;
-        readonly protected int MIN = 15;
+        readonly protected int MAX = 400;
+        readonly protected int TARGET = 2;
+        readonly protected int MIN = 1;
 
-        public WeightedCartesianCoordinatesAggregate MidPoint { get; set; }
-        public List<Node> Children { get; set; }
-        public Node Parent { get; set; }
+        public WeightedCartesianCoordinates MidPoint { get; set; }
+        public List<Node> Children { get; private set; }
+        public Node Parent { get; private set; }
 
-
-
-
-        #region Public Add User function
-
-        /// <summary>
-        /// Add a user by traversing the node tree until you find a RoomNode, then 
-        /// add user to the room.
-        /// </summary>
-        public void AddUser(UserNode user)
+        public Node()
         {
-            if (user == null) throw new ArgumentNullException("user");
-
-            var node = this;
-            // traverse the tree until you find a RoomNode
-            while (!(node is RoomNode))
-            {
-                node = node.Children.FindNearestTo(user);
-            }
-            node.AddChild(user);
+            Children = new List<Node>();
         }
 
-        #endregion
+
+
+
+        //#region Public Add User function
+
+        ///// <summary>
+        ///// Add a user by traversing the node tree until you find a RoomNode, then 
+        ///// add user to the room.
+        ///// </summary>
+        //public void AddUser(UserNode user)
+        //{
+        //    if (user == null) throw new ArgumentNullException("user");
+
+        //    var node = this;
+        //    // traverse the tree until you find a RoomNode
+        //    while (!(node is RoomNode))
+        //    {
+        //        node = node.Children.FindNearestTo(user);
+        //    }
+        //    node.AddChild(user);
+        //}
+
+        //#endregion
 
 
 
@@ -127,7 +93,7 @@ namespace Core
         /// Add a node to Children and re-calculate the midpoint.  If there are 
         /// too many children after adding, then split this node in twain.
         /// </summary>
-        void AddChild(Node node)
+        internal void AddChild(Node node)
         {
             Children.Add(node);
             node.Parent = this;
@@ -149,7 +115,7 @@ namespace Core
             // 3: assign each furthest child node to one of this node's siblings, 
             //    or to temp node, based on distance
             DistributeNodesToNearestNodes(
-                nodesToDistribute: furthestNodes, 
+                nodesToDistribute: furthestNodes,
                 targets: GetSiblings().Union(new[] { tempNode }));
 
             // 4: reset tempNode's midpoint
@@ -157,7 +123,7 @@ namespace Core
 
             // 5: if tempNode is less than MIN, move it's children to siblings, 
             //    otherwise, add tempNode to the Parent's children
-            if (tempNode.Children.Count <= TARGET)
+            if (tempNode.Children.Count < TARGET)
             {
                 DistributeNodesToNearestNodes(
                     nodesToDistribute: tempNode.Children,
@@ -226,10 +192,10 @@ namespace Core
             if (Parent == null || this == RoomNode.DefaultRoom)
                 return;
 
-            Parent.RemoveChild(this);
             DistributeNodesToNearestNodes(
                 nodesToDistribute: Children,
                 targets: GetSiblings());
+            Parent.RemoveChild(this);
         }
 
         #endregion
