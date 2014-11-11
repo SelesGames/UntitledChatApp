@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using UntitledChatApp.Core.Clustering;
 
 namespace UntitledChatApp.Core.Graph
 {
     public class Node
     {
-        readonly protected int MAX = 400;
-        readonly protected int TARGET = 2;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        readonly protected int MAX = 8;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        readonly protected int TARGET = 4;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         readonly protected int MIN = 1;
 
         public WeightedCartesianCoordinates MidPoint { get; set; }
@@ -87,6 +92,13 @@ namespace UntitledChatApp.Core.Graph
 
 
 
+        void ClearChildren()
+        {
+            Children.Clear();
+            MidPoint = WeightedCartesianCoordinates.Empty;
+        }
+
+
         #region Add a node to Children, recalculating midpoint, and splitting this node in two if there are too many children
 
         /// <summary>
@@ -98,6 +110,32 @@ namespace UntitledChatApp.Core.Graph
             Children.Add(node);
             node.Parent = this;
             MidPoint = MidPoint.Add(node.MidPoint.midpoint);
+            //if (Parent != null)
+            //    Parent.RecalculateMidpoint();
+
+            if (Children.Count >= MAX)
+                SplitThisNode();
+        }
+
+        //void RecalculateMidpoint()
+        //{
+            //MidPoint = Children.GetGeographicMidpoint();
+            //if (Parent != null)
+            //    Parent.RecalculateMidpoint();
+        //}
+
+        void AddChildren(IEnumerable<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                Children.Add(node);
+                node.Parent = this;
+            }
+
+            var nodesMidpoint = nodes.GetGeographicMidpoint();
+            MidPoint = MidPoint.Add(nodesMidpoint);
+            //if (Parent != null)
+            //    Parent.RecalculateMidpoint();
 
             if (Children.Count >= MAX)
                 SplitThisNode();
@@ -105,62 +143,34 @@ namespace UntitledChatApp.Core.Graph
 
         void SplitThisNode()
         {
-            var furthestNodes = RemoveFurthestChildren();
+            var clusterItems = Children.Select(o => new ClusterItem<Node> { Value = o, Mean = o.MidPoint.midpoint });
+            var algorithms = new Algorithms();
+            var clusters = algorithms.ComputeKMeans(clusterItems, numberOfClusters: 2, maxIterations: 5);
+            
+            // balance the two clusters
+            var cluster1 = clusters.First();
+            var cluster2 = clusters.Skip(1).First();
+            if (cluster1.Values.Count > cluster2.Values.Count)
+                cluster1.MoveOverflowTo(cluster2, TARGET);
+            else if (cluster2.Values.Count > cluster1.Values.Count)
+                cluster2.MoveOverflowTo(cluster1, TARGET);
 
-            // 1: create a temporary node (if this is a RoomNode, make a new RoomNode)
-            // 2: assign temp node's midpoint to the midpoint of the furthest nodes
+            ClearChildren();
+            AddChildren(cluster1.Values.Select(o => o.Value));
+
             var tempNode = (this is RoomNode) ? new RoomNode() : new Node();
-            tempNode.MidPoint = furthestNodes.GetGeographicMidpoint();
+            tempNode.AddChildren(cluster2.Values.Select(o => o.Value));
 
-            // 3: assign each furthest child node to one of this node's siblings, 
-            //    or to temp node, based on distance
-            DistributeNodesToNearestNodes(
-                nodesToDistribute: furthestNodes,
-                targets: GetSiblings().Union(new[] { tempNode }));
-
-            // 4: reset tempNode's midpoint
-            tempNode.MidPoint = tempNode.Children.GetGeographicMidpoint();
-
-            // 5: if tempNode is less than MIN, move it's children to siblings, 
-            //    otherwise, add tempNode to the Parent's children
-            if (tempNode.Children.Count < TARGET)
+            // check to see if the parent is the root node
+            if (Parent == null)
             {
-                DistributeNodesToNearestNodes(
-                    nodesToDistribute: tempNode.Children,
-                    targets: GetSiblings());
+                // create a new root node.  The root will never be a RoomNode
+                var newRoot = new Node();
+                Parent = newRoot;
+                Parent.AddChild(this);
+                RoomTree.Instance.root = newRoot;
             }
-            else
-            {
-                // check to see if the parent is the root node
-                if (Parent == null)
-                {
-                    // create a new root node.  The root will never be a RoomNode
-                    var newRoot = new Node();
-                    Parent = newRoot;
-                }
-                Parent.AddChild(tempNode);
-            }
-        }
-
-        /// <summary>
-        /// Remove the "bottom" or furthest N children, where N is the ideal "Target"
-        /// size of the room.
-        /// </summary>
-        /// <returns>The child nodes that were removed.</returns>
-        IEnumerable<Node> RemoveFurthestChildren()
-        {
-            var currentMidpoint = MidPoint.midpoint;
-
-            var furthestNodes = Children
-                .OrderyByDistanceTo(currentMidpoint, NodeDistanceOrderType.Furthest)
-                .Take(TARGET)
-                .ToList();
-
-            // remove the furthest child nodes
-            foreach (var node in furthestNodes)
-                RemoveChild(node);
-
-            return furthestNodes;
+            Parent.AddChild(tempNode);
         }
 
         #endregion
@@ -201,3 +211,91 @@ namespace UntitledChatApp.Core.Graph
         #endregion
     }
 }
+
+
+
+
+#region deprecated split algorithm, based on midpoint, which was a bad way to do it
+
+        //void SplitThisNode()
+        //{
+        //    var furthestNodes = RemoveFurthestChildren();
+
+        //    // 1: create a temporary node (if this is a RoomNode, make a new RoomNode)
+        //    // 2: assign temp node's midpoint to the midpoint of the furthest nodes
+        //    var tempNode = (this is RoomNode) ? new RoomNode() : new Node();
+        //    tempNode.MidPoint = furthestNodes.GetGeographicMidpoint();
+
+        //    // 3: assign each furthest child node to one of this node's siblings, 
+        //    //    or to temp node, based on distance
+        //    DistributeNodesToNearestNodes(
+        //        nodesToDistribute: furthestNodes,
+        //        targets: GetSiblings().Union(new[] { tempNode }));
+
+        //    // 4: reset tempNode's midpoint
+        //    tempNode.MidPoint = tempNode.Children.GetGeographicMidpoint();
+
+        //    // 5: if tempNode is less than MIN, move it's children to siblings, 
+        //    //    otherwise, add tempNode to the Parent's children
+        //    if (tempNode.Children.Count < TARGET)
+        //    {
+        //        DistributeNodesToNearestNodes(
+        //            nodesToDistribute: tempNode.Children,
+        //            targets: GetSiblings());
+        //    }
+        //    else
+        //    {
+        //        // check to see if the parent is the root node
+        //        if (Parent == null)
+        //        {
+        //            // create a new root node.  The root will never be a RoomNode
+        //            var newRoot = new Node();
+        //            Parent = newRoot;
+        //        }
+        //        Parent.AddChild(tempNode);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Remove the "bottom" or furthest N children, where N is the ideal "Target"
+        ///// size of the room.
+        ///// </summary>
+        ///// <returns>The child nodes that were removed.</returns>
+        //IEnumerable<Node> RemoveFurthestChildren()
+        //{
+        //    var currentMidpoint = MidPoint.midpoint;
+
+        //    var furthestNodes = Children
+        //        .OrderyByDistanceTo(currentMidpoint, NodeDistanceOrderType.Furthest)
+        //        .Take(TARGET)
+        //        .ToList();
+
+        //    // remove the furthest child nodes
+        //    foreach (var node in furthestNodes)
+        //        RemoveChild(node);
+
+        //    return furthestNodes;
+        //}
+
+///// <summary>
+///// Remove the "bottom" or furthest N children, where N is the ideal "Target"
+///// size of the room.
+///// </summary>
+///// <returns>The child nodes that were removed.</returns>
+//IEnumerable<Node> RemoveFurthestChildren()
+//{
+//    var currentMidpoint = MidPoint.midpoint;
+
+//    var furthestNodes = Children
+//        .OrderyByDistanceTo(currentMidpoint, NodeDistanceOrderType.Furthest)
+//        .Take(TARGET)
+//        .ToList();
+
+//    // remove the furthest child nodes
+//    foreach (var node in furthestNodes)
+//        RemoveChild(node);
+
+//    return furthestNodes;
+//}
+
+#endregion

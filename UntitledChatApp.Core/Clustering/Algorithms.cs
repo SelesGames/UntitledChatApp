@@ -10,6 +10,11 @@ namespace UntitledChatApp.Core.Clustering
     {
         public T Value { get; set; }
         public CartesianCoordinates Mean { get; set; }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     public class Cluster<T>
@@ -28,6 +33,24 @@ namespace UntitledChatApp.Core.Clustering
         }
     }
 
+    public class SortedCluster<T> : Cluster<T>
+    {
+        public SortedCluster(Cluster<T> cluster)
+        {
+            this.Mean = cluster.Mean;
+            this.Values = cluster.Values
+                .Select(o =>
+                    new
+                    {
+                        item = o,
+                        distanceFromCluster = GPSMath.DistanceSquared(o.Mean, Mean),
+                    })
+                .OrderBy(o => o.distanceFromCluster)
+                .Select(o => o.item)
+                .ToList();
+        }
+    }
+
     public static class ClusterExtensions
     {
         public static Cluster<T> NearestTo<T>(this IEnumerable<Cluster<T>> clusters, CartesianCoordinates point)
@@ -37,7 +60,7 @@ namespace UntitledChatApp.Core.Clustering
 
             foreach (var cluster in clusters)
             {
-                var distance = GPSMath.DistanceFastCalc(cluster.Mean, point);
+                var distance = GPSMath.DistanceSquared(cluster.Mean, point);
                 if (distance < nearestDistance)
                 {
                     nearest = cluster;
@@ -45,6 +68,17 @@ namespace UntitledChatApp.Core.Clustering
                 }
             }
             return nearest;
+        }
+
+        public static void MoveOverflowTo<T>(this Cluster<T> source, Cluster<T> target, int balancedNum)
+        {
+            var sortedSource = new SortedCluster<T>(source);
+            var overflow = sortedSource.Values.Skip(balancedNum);
+            foreach (var item in overflow)
+            {
+                source.Values.Remove(item);
+            }
+            target.Values.AddRange(overflow);
         }
     }
 
@@ -55,8 +89,8 @@ namespace UntitledChatApp.Core.Clustering
             int numberOfClusters,
             int maxIterations)
         {
-            int currentIteration = 0;
             var clusters = ComputeInitialClustering(source, numberOfClusters);
+            int currentIteration = 1;
 
             while (currentIteration++ < maxIterations)
             {

@@ -15,7 +15,7 @@ namespace UntitledChatApp.Core.Graph
                     new
                     {
                         node,
-                        dist = GPSMath.DistanceFastCalc(coords, node.MidPoint.midpoint),
+                        dist = GPSMath.DistanceSquared(coords, node.MidPoint.midpoint),
                     });
 
             if (orderType == NodeDistanceOrderType.Nearest)

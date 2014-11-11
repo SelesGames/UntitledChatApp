@@ -7,7 +7,7 @@ namespace UntitledChatApp.Core
     {
         public static RoomTree Instance = new RoomTree();
 
-        Node root;
+        public Node root;
 
         public RoomTree()
         {

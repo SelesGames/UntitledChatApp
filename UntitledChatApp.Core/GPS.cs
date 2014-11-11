@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace UntitledChatApp.Core
 {
@@ -10,6 +11,33 @@ namespace UntitledChatApp.Core
         public override string ToString()
         {
             return string.Format("lat: {0}, long: {1}", decimalLatitude, decimalLongitude);
+        }
+
+        public static implicit operator DecimalCoordinates(string coords)
+        {
+            if (string.IsNullOrWhiteSpace(coords))
+                ThrowInvalidCastException();
+
+            var split = coords.Split(',').ToArray();
+            if (split.Length != 2)
+                ThrowInvalidCastException();
+
+            DecimalCoordinates result;
+            double lat = 0d, longi = 0d;
+            if (!(
+                double.TryParse(split[0], out lat) && 
+                double.TryParse(split[1], out longi)
+            ))
+                ThrowInvalidCastException();
+
+            result.decimalLatitude = lat;
+            result.decimalLongitude = longi;
+            return result;
+        }
+
+        static void ThrowInvalidCastException()
+        {
+            throw new InvalidCastException("these coords are not valid");
         }
     }
 
@@ -46,11 +74,7 @@ namespace UntitledChatApp.Core
 
     public struct WeightedCartesianCoordinates
     {
-        public static WeightedCartesianCoordinates Empty;// = new WeightedCartesianCoordinates
-        //{ 
-        //    midpoint = new CartesianCoordinates(), 
-        //    weight = 1d
-        //};
+        public static WeightedCartesianCoordinates Empty;
 
         public CartesianCoordinates midpoint;
         public double weight;
@@ -205,9 +229,9 @@ namespace UntitledChatApp.Core
         }
 
         /// <summary>
-        /// Return 1/10 the squared distance of 2 points in 3D.  Eliminates the expensive square root calculation
+        /// Return the squared distance of 2 points in 3D.  Eliminates the expensive square root calculation
         /// </summary>
-        public static double DistanceFastCalc(CartesianCoordinates a, CartesianCoordinates b)
+        public static double DistanceSquared(CartesianCoordinates a, CartesianCoordinates b)
         {
             var xd = a.x - b.x;
             var yd = a.y - b.y;
@@ -217,13 +241,7 @@ namespace UntitledChatApp.Core
             var yd2 = yd * yd;
             var zd2 = zd * zd;
 
-            //var xten = xd2 * 0.1d;
-            //var yten = yd2 * 0.1d;
-            //var zten = zd2 * 0.1d;
-
-            //return xten + yten + zten;
-
-            return (xd2 + yd2 + zd2) * 0.1d;
+            return xd2 + yd2 + zd2;
         }
     }
 }
