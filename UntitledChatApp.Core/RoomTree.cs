@@ -26,6 +26,12 @@ namespace UntitledChatApp.Core
         /// </summary>
         public void AddUser(UserNode user)
         {
+            var node = FindClosestRoom(user);
+            node.AddChild(user);
+        }
+
+        public RoomNode FindClosestRoom(UserNode user)
+        {
             if (user == null) throw new ArgumentNullException("user");
 
             var node = root;
@@ -34,7 +40,7 @@ namespace UntitledChatApp.Core
             {
                 node = node.Children.FindNearestTo(user);
             }
-            node.AddChild(user);
+            return (RoomNode)node;
         }
 
         #endregion

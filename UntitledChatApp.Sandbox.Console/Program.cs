@@ -65,7 +65,7 @@ namespace UntitledChatApp.Sandbox.Console
             var users = addresses.Zip(coords, (address, coord) => 
                 new UserNode
                 { 
-                    Address = address,
+                    UserName = address,
                     MidPoint = coord.ToRadians().ToCartesian(),
                 })
                 //.SelectMany(o => geocoder.Geocode(o)
@@ -119,7 +119,7 @@ namespace UntitledChatApp.Sandbox.Console
                 {
                     System.Console.WriteLine(string.Format(
                         "    {0}",
-                        user.Address));
+                        user.UserName));
                 }
 
                 System.Console.WriteLine();

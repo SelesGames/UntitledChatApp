@@ -112,10 +112,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatHub.cs" />
-    <Compile Include="ChatUser.cs" />
+    <Compile Include="UserNodeCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="UserId.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UntitledChatApp.Core\UntitledChatApp.Core.csproj">
+      <Project>{1a9d1d92-86c8-4935-ac03-05d7a759a825}</Project>
+      <Name>UntitledChatApp.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
