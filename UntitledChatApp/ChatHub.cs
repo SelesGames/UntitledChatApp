@@ -141,10 +141,10 @@ namespace UntitledChatApp
             userNodeCache.MapConnectionId(connectionId, user);
 
             // set the Location
-            DecimalCoordinates decimalCoordinates;
-            decimalCoordinates.decimalLatitude = latitude;
-            decimalCoordinates.decimalLongitude = longitude;
-            user.MidPoint = decimalCoordinates.ToRadians().ToCartesian();
+            DecimalCoordinates coords;
+            coords.decimalLatitude = latitude;
+            coords.decimalLongitude = longitude;
+            user.MidPoint = coords.ToRadians().ToCartesian();
             tree.AddUser(user);
         }
 

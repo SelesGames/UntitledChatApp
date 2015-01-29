@@ -1,0 +1,109 @@
+﻿.container {
+    background-color: #99CCFF;
+    border: thick solid #808080;
+    padding: 20px;
+    margin: 20px;
+}
+
+body {
+    font: 12px arial;
+    color: #222;
+    text-align: center;
+    padding: 35px;
+}
+
+form, p, span {
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    font: 12px arial;
+}
+
+a {
+    color: #0000FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#wrapper, #loginform {
+    margin: 0 auto;
+    padding-bottom: 25px;
+    background: #EBF4FB;
+    width: 504px;
+    border: 1px solid #ACD8F0;
+}
+
+#loginform {
+    padding-top: 18px;
+}
+
+#loginform p {
+    margin: 5px;
+}
+
+#submit {
+    width: 60px;
+}
+
+.error {
+    color: #ff0000;
+}
+
+#menu {
+    padding: 12.5px 25px 12.5px 25px;
+}
+
+.welcome {
+    float: left;
+}
+
+.logout {
+    float: right;
+}
+
+.msgln {
+    margin: 0 0 2px 0;
+}
+
+#chatbox {
+    text-align: left;
+    margin: 0 auto;
+    margin-bottom: 25px;
+    padding: 0px;
+    background: #fdfdfd;
+    height: 270px;
+    width: 300px;
+    border: 2px solid #ACD8F0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#message {
+    width: 300px;
+    border: 2px solid #ACD8F0;
+}
+
+.textEntry {
+    padding:  5px 12px 5px 12px;
+    margin-bottom: 2px;
+}
+
+.txtUserName {
+    font-size: 10pt;
+    color: #000000;
+    font-weight: bold;
+    display: inline;
+}
+
+.txtMessage {
+    font-size: 11pt;
+    color: #000000;
+    margin-left: 8px;
+    display: inline;
+    word-wrap: break-word;
+}

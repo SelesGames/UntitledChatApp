@@ -104,17 +104,32 @@ namespace UntitledChatApp.Core.Graph
         /// <summary>
         /// Add a node to Children and re-calculate the midpoint.  If there are 
         /// too many children after adding, then split this node in twain.
+        /// 
+        /// Remove the node from the Children collection from whatever it's current 
+        /// Parent is first!
         /// </summary>
         internal void AddChild(Node node)
         {
-            Children.Add(node);
+            var currentParent = node.Parent;
+
+            // if the node has an existing parent node that is different from this node, remove it first
+            if (currentParent != null && !currentParent.Equals(this))
+            {
+                currentParent.RemoveChild(node);
+            }
+
             node.Parent = this;
-            MidPoint = MidPoint.Add(node.MidPoint.midpoint);
+
+            if (!Children.Contains(node))
+            {
+                Children.Add(node);
+                MidPoint = MidPoint.Add(node.MidPoint.midpoint);
+                if (Children.Count >= MAX)
+                    SplitThisNode();
+            }
             //if (Parent != null)
             //    Parent.RecalculateMidpoint();
 
-            if (Children.Count >= MAX)
-                SplitThisNode();
         }
 
         //void RecalculateMidpoint()
