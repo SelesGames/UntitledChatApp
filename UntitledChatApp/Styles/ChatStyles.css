@@ -1,24 +1,28 @@
-﻿.container {
-    background-color: #99CCFF;
-    border: thick solid #808080;
-    padding: 20px;
-    margin: 20px;
+﻿html {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    background: red;
+    font-family:sans-serif;
+	-ms-text-size-adjust:100%;
+	-webkit-text-size-adjust:100%;
 }
 
 body {
-    font: 12px arial;
-    color: #222;
-    text-align: center;
-    padding: 35px;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    background: #444;
 }
 
 form, p, span {
     margin: 0;
     padding: 0;
-}
-
-input {
-    font: 12px arial;
 }
 
 a {
@@ -30,63 +34,58 @@ a:hover {
     text-decoration: underline;
 }
 
-#wrapper, #loginform {
-    margin: 0 auto;
-    padding-bottom: 25px;
-    background: #EBF4FB;
-    width: 504px;
-    border: 1px solid #ACD8F0;
-}
-
-#loginform {
-    padding-top: 18px;
-}
-
-#loginform p {
-    margin: 5px;
-}
-
-#submit {
-    width: 60px;
-}
-
-.error {
-    color: #ff0000;
-}
-
-#menu {
-    padding: 12.5px 25px 12.5px 25px;
-}
-
-.welcome {
-    float: left;
-}
-
-.logout {
-    float: right;
-}
-
-.msgln {
-    margin: 0 0 2px 0;
+.wrapper {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 100% !important;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+	-ms-flex-direction: column;
+    flex-direction: column;
 }
 
 #chatbox {
     text-align: left;
-    margin: 0 auto;
-    margin-bottom: 25px;
-    padding: 0px;
     background: #fdfdfd;
-    height: 270px;
-    width: 300px;
-    border: 2px solid #ACD8F0;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-flex:1;
+	-ms-flex:1;
+    flex: 1;
+}
+
+#inputPanel {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    background: white;
+    padding: 0px 0px 8px 0px;
 }
 
 #message {
-    width: 300px;
-    border: 2px solid #ACD8F0;
+    -webkit-flex:1;
+	-ms-flex:1;
+    flex: 1;
+    border: 1px solid rgba(147, 128, 108, 0.25);
+    padding: 0.5em 0.75em;
+    border-radius: 2px 0 0 2px;
 }
+
+#sendmessage {
+    border: 1px solid rgba(147, 128, 108, 0.25);
+    padding: 0.5em 0.75em;
+    background-color: rgba(56, 143, 255, 1);
+    color: white;
+    font: inherit;
+    font-weight: normal;
+    border-radius: 0 2px 2px 0;
+}
+
+
 
 .textEntry {
     padding:  5px 12px 5px 12px;

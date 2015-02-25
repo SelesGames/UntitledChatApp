@@ -1,7 +1,16 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <title>SignalR Simple Chat</title>
+    <!-- Default the site's size to the device's resolution. -->
+    <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, maximum-scale=1.0, maximum-scale=1" />
+    <meta content="True" name="HandheldFriendly" />
+    <meta content="320" name="MobileOptimized" />
+    <!--meta content="width=device-width,minimum-scale=1,maximum-scale=1" name="viewport" /-->
+    
+    <link rel="stylesheet" type="text/css" href="Styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="Styles/main.css">
     <link rel="stylesheet" type="text/css" href="Styles/ChatStyles.css">
 </head>
 <body>
@@ -15,13 +24,10 @@
             <!--div id="discussion">discussion here</div-->
         </div>
 
-        <!--form name="message" action="">
-            <input name="usermsg" type="text" id="usermsg" size="63" />
-            <input name="submitmsg" type="submit" id="submitmsg" value="Send" />
-        </form-->
-
-        <input type="text" id="message" />
-        <input type="submit" id="sendmessage" value="Send" />
+        <div id="inputPanel">
+            <input type="text" id="message" />
+            <input type="submit" id="sendmessage" value="Send" />
+        </div>
     </div>
 
     <!--Script references. -->

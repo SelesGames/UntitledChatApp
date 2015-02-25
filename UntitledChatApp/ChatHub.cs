@@ -187,6 +187,9 @@ namespace UntitledChatApp
         /// <param name="message"></param>
         public void Send(string message)
         {
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
             var user = FindUserByConnectionId();
             if (!string.IsNullOrWhiteSpace(user.UserName))
             {
