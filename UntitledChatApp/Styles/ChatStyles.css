@@ -1,26 +1,4 @@
-﻿html {
-    height: 100% !important;
-    max-height: 100% !important;
-    min-height: 100% !important;
-    padding: 0px;
-    margin: 0px;
-    overflow: hidden;
-    background: red;
-    font-family:sans-serif;
-	-ms-text-size-adjust:100%;
-	-webkit-text-size-adjust:100%;
-}
-
-body {
-    height: 100% !important;
-    max-height: 100% !important;
-    min-height: 100% !important;
-    padding: 0px;
-    margin: 0px;
-    background: #444;
-}
-
-form, p, span {
+﻿form, p, span {
     margin: 0;
     padding: 0;
 }
@@ -34,27 +12,53 @@ a:hover {
     text-decoration: underline;
 }
 
-.wrapper {
-    height: 100% !important;
-    max-height: 100% !important;
-    min-height: 100% !important;
+
+html, body {
+    padding: 0px;
+    margin: 0px;
+    
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
-	-ms-flex-direction: column;
+    -ms-flex-direction: column;
     flex-direction: column;
+    
+    -webkit-flex:1;
+    -ms-flex:1;
+    flex: 1;
+    
+    overflow: hidden;
+}
+
+html {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 100% !important;
+    
+    background: red;
+    font-family:sans-serif;
+    -ms-text-size-adjust:120%;
+    -webkit-text-size-adjust:120%;
+}
+
+body {
+    background: #444;
 }
 
 #chatbox {
     text-align: left;
     background: #fdfdfd;
-    overflow-y: auto;
     overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     -webkit-flex:1;
-	-ms-flex:1;
+    -ms-flex:1;
     flex: 1;
 }
+
+
+
 
 #inputPanel {
     display: -webkit-box;
@@ -68,7 +72,7 @@ a:hover {
 
 #message {
     -webkit-flex:1;
-	-ms-flex:1;
+    -ms-flex:1;
     flex: 1;
     border: 1px solid rgba(147, 128, 108, 0.25);
     padding: 0.5em 0.75em;
@@ -93,14 +97,14 @@ a:hover {
 }
 
 .txtUserName {
-    font-size: 10pt;
+    font-size: 12pt;
     color: #000000;
     font-weight: bold;
     display: inline;
 }
 
 .txtMessage {
-    font-size: 11pt;
+    font-size: 13pt;
     color: #000000;
     margin-left: 8px;
     display: inline;
