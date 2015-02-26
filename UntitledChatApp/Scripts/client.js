@@ -25,8 +25,8 @@
 
         $('#chatbox').append(messageElement);
 
-        $('#chatbox').stop().animate({
-            scrollTop: $("#chatbox")[0].scrollHeight
+        $('html').stop().animate({
+            scrollTop: $("html")[0].scrollHeight
         }, 800);
     };
 
