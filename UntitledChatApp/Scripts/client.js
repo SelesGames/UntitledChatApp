@@ -1,6 +1,7 @@
 ﻿$(function () {
     // Declare a proxy to reference the hub.
     var COOKIE_KEY = "chatHubCookie";
+    $.connection.hub.url = "http://ucaserver.azurewebsites.net/signalr"
     var chat = $.connection.chatHub;
 
     var userInfo = { id: null, name: null };
